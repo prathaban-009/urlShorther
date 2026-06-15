@@ -1,0 +1,30 @@
+# ===========================
+# Root level
+# ===========================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# ===========================
+# Server
+# ===========================
+server/.env
+server/node_modules/
+server/src/db/check.js
+
+# ===========================
+# Client
+# ===========================
+client/.env
+client/node_modules/
+client/dist/
+client/.vite/
+
+# ===========================
+# Misc
+# ===========================
+*.pem
+.idea/
+.vscode/
+*.local
