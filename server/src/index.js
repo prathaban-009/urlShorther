@@ -34,20 +34,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/urls', urlRoutes);
 
-// Serve frontend static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../client/dist')));
-}
-
-// Redirect handler (catch-all for short codes)
+// Redirect handler — must be LAST (catch-all for short codes)
 app.use('/', redirectHandler);
-
-// Fallback to index.html for React routing in production
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
-  });
-}
 
 // Global error handler
 app.use((err, req, res, next) => {

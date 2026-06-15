@@ -7,14 +7,11 @@ const router = express.Router();
 /**
  * GET /:shortCode — Redirect to original URL and track analytics
  */
-router.get('/:shortCode', async (req, res, next) => {
+router.get('/:shortCode', async (req, res) => {
   const { shortCode } = req.params;
 
   // Skip system paths
   if (['api', 'favicon.ico', 'robots.txt', 'sitemap.xml'].includes(shortCode)) {
-    if (process.env.NODE_ENV === 'production') {
-      return next();
-    }
     return res.status(404).json({ error: 'Not found' });
   }
 
@@ -26,9 +23,7 @@ router.get('/:shortCode', async (req, res, next) => {
     );
 
     if (result.rows.length === 0) {
-      if (process.env.NODE_ENV === 'production') {
-        return next();
-      }
+      const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
       return res.status(404).send(`
         <!DOCTYPE html>
         <html>
@@ -46,7 +41,7 @@ router.get('/:shortCode', async (req, res, next) => {
           <div class="container">
             <h1>404</h1>
             <p>This short link doesn't exist or has been removed.</p>
-            <a href="http://localhost:5173">Go Home</a>
+            <a href="${clientUrl}">Go Home</a>
           </div>
         </body>
         </html>
