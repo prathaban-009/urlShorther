@@ -6,6 +6,7 @@ const steps = [
   // 1. Drop any existing conflicting tables (from prior schema)
   { name: 'Drop old tables (if any)',
     sql: `
+      DROP TABLE IF EXISTS otps CASCADE;
       DROP TABLE IF EXISTS visits CASCADE;
       DROP TABLE IF EXISTS analytics CASCADE;
       DROP TABLE IF EXISTS urls CASCADE;
@@ -27,6 +28,19 @@ const steps = [
         name          VARCHAR(255),
         created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `
+  },
+
+  // 3.5. OTPs
+  { name: 'Create otps table',
+    sql: `
+      CREATE TABLE otps (
+        id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email       VARCHAR(255) NOT NULL,
+        otp         VARCHAR(10) NOT NULL,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        expires_at  TIMESTAMPTZ NOT NULL
       )
     `
   },
@@ -76,6 +90,7 @@ const steps = [
   { name: 'Index: urls.custom_alias',     sql: `CREATE INDEX idx_urls_custom_alias  ON urls(custom_alias) WHERE custom_alias IS NOT NULL` },
   { name: 'Index: analytics.url_id',      sql: `CREATE INDEX idx_analytics_url_id   ON analytics(url_id)` },
   { name: 'Index: analytics.visited_at',  sql: `CREATE INDEX idx_analytics_visited  ON analytics(visited_at)` },
+  { name: 'Index: otps.email',            sql: `CREATE INDEX idx_otps_email         ON otps(email)` },
 ];
 
 async function migrate() {

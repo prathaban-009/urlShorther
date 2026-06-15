@@ -7,11 +7,14 @@ const router = express.Router();
 /**
  * GET /:shortCode — Redirect to original URL and track analytics
  */
-router.get('/:shortCode', async (req, res) => {
+router.get('/:shortCode', async (req, res, next) => {
   const { shortCode } = req.params;
 
   // Skip system paths
   if (['api', 'favicon.ico', 'robots.txt', 'sitemap.xml'].includes(shortCode)) {
+    if (process.env.NODE_ENV === 'production') {
+      return next();
+    }
     return res.status(404).json({ error: 'Not found' });
   }
 
@@ -23,6 +26,9 @@ router.get('/:shortCode', async (req, res) => {
     );
 
     if (result.rows.length === 0) {
+      if (process.env.NODE_ENV === 'production') {
+        return next();
+      }
       return res.status(404).send(`
         <!DOCTYPE html>
         <html>
